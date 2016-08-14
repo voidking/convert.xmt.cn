@@ -1,0 +1,110 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>微信公众号一键关注页面生成器 新媒体管家提供</title>
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+    <meta name="Keywords" content="不失效的图文链接生成器">
+    <meta name="Description" content="不失效的图文链接生成器">
+    <link rel="stylesheet" href="./js/animate.min.css">
+    <link rel="stylesheet" href="./js/style.css">
+    <div style="display: none;">
+        <img src="./img/share.png" alt="分享">
+    </div>
+</head>
+<body>
+	<div class="container">
+		    <div class="content-img">
+                <div class="img-responsive-wrap">
+                    <img src="./img/title.png" class="img-responsive animated slideInUp" style="height:50px">
+                    <img src="./img/guanzhu.png" class="img-responsive animated slideInUp_own imghide">
+                </div>
+            </div>
+        <div class="content-bottom animated slideInUp">
+            <p class="tip-word animated fadeIn">
+                提示：更多运营工具及技巧请关注微信号 <a href="https://mp.weixin.qq.com/mp/profile_ext?action=home&scene=110&__biz=MzAxNDYwMjQ1MA==#wechat_redirect">新媒体课堂</a>:)
+            </p>
+			<div class="form">
+				<input id="wxpassport" type="text" name="ua" placeholder="将公众号发过的图文链接放在这里" value="">
+				<button id="btn_confirm" type="button" class="btn btn-primary">生成</button>
+			</div>
+            <div class="form hidden" id="hidden-form">
+                <p style="text-align: center;margin-bottom: 5px; margin-top: 2px;">关注页链接已生成,长按复制</p>
+                <a id="short-url" href=""></a>
+			</div>
+			<footer>
+				<a href="http://xmt.cn/">新媒体管家</a>
+			</footer>
+		</div>
+	</div>
+	<div class="ajaxAlert"></div>
+	<div id="fixed">
+		<div class="sharebg"></div>
+		<div class="txt"></div>
+	</div>
+	<script src="./js/zepto.min.js"></script>
+	<script src="./js/event.js"></script>
+	<script src="./js/touch.js"></script>
+	<script src="./js/fx_methods.js"></script>
+	<script src="./js/fx.js"></script>
+	<!--<script src="./js/clipboard.min.js"></script>-->
+	<script>
+        var LINK = 'https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MjM5NTEzODE5MQ==&scene=110#wechat_redirect';
+        function showMsg(msg){
+            Zepto('.ajaxAlert').html("<div style='color:#fff;background-color:rgba(0,0,0,.8);padding:10px;border-radius:4px;'>"+msg+"</div>").show();
+            setTimeout(function(){
+                Zepto('.ajaxAlert').hide();
+            },2000);
+        }
+
+        function getUrlParam(url,name) {
+            var a =  document.createElement('a');
+            a.href = url;
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+            var r = a.search.substr(1).match(reg);
+            if (r != null) return unescape(r[2]);
+            return null;
+        }
+
+        $("#btn_copy").on("click",function(){
+            var self = $(this);
+            if(self.hasClass("disable")){
+                showMsg('请先生成链接');
+                return false;
+            }
+            window.location.href = LINK;
+        });
+
+        Zepto('#btn_confirm').click(function(event) {
+            var name=Zepto('#wxpassport').val(),
+                __biz = getUrlParam(name,'__biz'),
+                link = 'https://mp.weixin.qq.com/mp/profile_ext?action=home&scene=110&__biz=';
+
+            if (name==''||!__biz) {
+                showMsg('输入链接不合法');
+                return false;
+            }else{
+                showMsg('正在链接');
+                LINK = link+__biz+"#wechat_redirect";
+                $.ajax({
+                    type:"POST",
+                    dataType:'json',
+                    url :"http://c.wxptgj.com/api",
+                    contentType:"application/json",
+                    data:JSON.stringify({
+                        "url":LINK
+                    }),
+                    success:function(res){
+                        $("#hidden-form").removeClass("hidden");
+                        $("#short-url").attr({href:res.short_url}).html(res.short_url);
+                    }
+                })
+            }
+        });
+    </script>
+    <script src="https://s95.cnzz.com/z_stat.php?id=1259897389&web_id=1259897389" language="JavaScript"></script>
+</body>
+</html>
+
+
